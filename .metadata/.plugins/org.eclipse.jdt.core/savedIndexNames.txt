@@ -1,0 +1,1 @@
+INDEX VERSION 1.131+/home/darkonnen/Documents/spring-projects/Eureka-Discovery-Service/.metadata/.plugins/org.eclipse.jdt.core

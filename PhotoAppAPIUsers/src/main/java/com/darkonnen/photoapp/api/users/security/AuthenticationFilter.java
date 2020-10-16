@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-public class Authenticationfilter extends UsernamePasswordAuthenticationFilter{
+public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 	
 	private UsersService usersService;
 	
 	private Environment environment;
 	
-	public Authenticationfilter(UsersService usersService, Environment environment, AuthenticationManager authenticationManager) {
+	public AuthenticationFilter(UsersService usersService, Environment environment, AuthenticationManager authenticationManager) {
 		this.usersService=usersService; 
 		this.environment=environment;
 		super.setAuthenticationManager(authenticationManager);

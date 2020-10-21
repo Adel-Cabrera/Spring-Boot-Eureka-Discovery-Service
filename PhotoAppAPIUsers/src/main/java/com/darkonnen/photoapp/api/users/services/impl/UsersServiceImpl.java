@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
@@ -14,12 +16,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.darkonnen.photoapp.api.users.data.AlbumServiceClient;
+import com.darkonnen.photoapp.api.users.data.AlbumsServiceClient;
 import com.darkonnen.photoapp.api.users.data.UserEntity;
 import com.darkonnen.photoapp.api.users.data.UsersRepository;
 import com.darkonnen.photoapp.api.users.services.UsersService;
 import com.darkonnen.photoapp.api.users.shared.UserDto;
 import com.darkonnen.photoapp.api.users.ui.models.AlbumResponseModel;
+
+import feign.FeignException;
 
 @Service
 public class UsersServiceImpl implements UsersService {
@@ -27,14 +31,16 @@ public class UsersServiceImpl implements UsersService {
 	UsersRepository usersRepository;
 	BCryptPasswordEncoder bCryptPasswordEncoder;
 //	RestTemplate restTemplate;
-	AlbumServiceClient albumServiceClient;
+	AlbumsServiceClient albumServiceClient;
 	Environment environment;
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	
 
 	@Autowired
 	public UsersServiceImpl(UsersRepository usersRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-			 Environment environment, AlbumServiceClient albumServiceClient) { //RestTemplate restTemplate,
+			 Environment environment, AlbumsServiceClient albumServiceClient) { //RestTemplate restTemplate,
 		this.usersRepository = usersRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 //		this.restTemplate = restTemplate;
@@ -97,7 +103,13 @@ public class UsersServiceImpl implements UsersService {
 //		List<AlbumResponseModel> albumsList = albumsListResponse.getBody();
 		
 		List<AlbumResponseModel> albumsList = albumServiceClient.getAlbums(userId);
-		
+//		try {
+//			albumsList = albumServiceClient.getAlbums(userId);
+//		} catch (FeignException e) {
+//			// TODO Auto-generated catch block
+//			logger.error(e.getLocalizedMessage());
+//		}
+//		
 		userDto.setAlbums(albumsList);
 		
 		return userDto;

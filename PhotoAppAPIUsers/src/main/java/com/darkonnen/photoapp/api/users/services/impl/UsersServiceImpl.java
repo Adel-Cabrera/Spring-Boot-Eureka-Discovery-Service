@@ -1,37 +1,49 @@
 package com.darkonnen.photoapp.api.users.services.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.darkonnen.photoapp.api.users.data.AlbumServiceClient;
 import com.darkonnen.photoapp.api.users.data.UserEntity;
 import com.darkonnen.photoapp.api.users.data.UsersRepository;
 import com.darkonnen.photoapp.api.users.services.UsersService;
 import com.darkonnen.photoapp.api.users.shared.UserDto;
+import com.darkonnen.photoapp.api.users.ui.models.AlbumResponseModel;
 
 @Service
 public class UsersServiceImpl implements UsersService {
 
 	UsersRepository usersRepository;
 	BCryptPasswordEncoder bCryptPasswordEncoder;
+//	RestTemplate restTemplate;
+	AlbumServiceClient albumServiceClient;
+	Environment environment;
+	
+	
 
 	@Autowired
-	public UsersServiceImpl(UsersRepository usersRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+	public UsersServiceImpl(UsersRepository usersRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
+			 Environment environment, AlbumServiceClient albumServiceClient) { //RestTemplate restTemplate,
 		this.usersRepository = usersRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+//		this.restTemplate = restTemplate;
+		this.albumServiceClient = albumServiceClient;
+		this.environment = environment;
 	}
 
 	@Override
 	public UserDto createUser(UserDto userDetails) {
-		// TODO Auto-generated method stub
 		userDetails.setUserId(UUID.randomUUID().toString());
 		userDetails.setEncryptedPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));
 
@@ -66,7 +78,29 @@ public class UsersServiceImpl implements UsersService {
 
 		return new ModelMapper().map(userEntity, UserDto.class);
 	}
-	
-	
+
+	@Override
+	public UserDto getUserById(String userId) {
+		UserEntity userEntity = usersRepository.findByUserId(userId);
+
+		if (userEntity == null)
+			throw new UsernameNotFoundException("User not found");
+		UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+
+//		String albumsUrl = String.format(environment.getProperty("albums.url"), userId);
+//		
+////		System.out.println(albumsUrl);
+//
+//		ResponseEntity<List<AlbumResponseModel>> albumsListResponse = restTemplate.exchange(albumsUrl, HttpMethod.GET,
+//				null, new ParameterizedTypeReference<List<AlbumResponseModel>>() {
+//				});
+//		List<AlbumResponseModel> albumsList = albumsListResponse.getBody();
+		
+		List<AlbumResponseModel> albumsList = albumServiceClient.getAlbums(userId);
+		
+		userDto.setAlbums(albumsList);
+		
+		return userDto;
+	}
 
 }

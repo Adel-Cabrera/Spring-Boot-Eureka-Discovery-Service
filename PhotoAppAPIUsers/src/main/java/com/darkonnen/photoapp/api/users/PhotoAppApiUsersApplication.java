@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
-import com.darkonnen.photoapp.api.users.shared.FeignErrorDecoder;
-
 import feign.Logger;
 
 @SpringBootApplication

@@ -23,8 +23,6 @@ import com.darkonnen.photoapp.api.users.services.UsersService;
 import com.darkonnen.photoapp.api.users.shared.UserDto;
 import com.darkonnen.photoapp.api.users.ui.models.AlbumResponseModel;
 
-import feign.FeignException;
-
 @Service
 public class UsersServiceImpl implements UsersService {
 
@@ -102,7 +100,10 @@ public class UsersServiceImpl implements UsersService {
 //				});
 //		List<AlbumResponseModel> albumsList = albumsListResponse.getBody();
 		
+		logger.info("Before calling albums microservice");
 		List<AlbumResponseModel> albumsList = albumServiceClient.getAlbums(userId);
+		logger.info("After calling albums microservice");
+
 //		try {
 //			albumsList = albumServiceClient.getAlbums(userId);
 //		} catch (FeignException e) {
